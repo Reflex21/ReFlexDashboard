@@ -12,7 +12,6 @@ const Login = () => {
     const res = await axios.post('/api/login', { username, password })
     if (res.data.token) {
       console.log(res.data.token)
-      // history.push('/')
     } else {
       alert('Please type in correct username/password')
     }
@@ -50,7 +49,6 @@ const Login = () => {
           </div>
           <p>
             Don&apos;t have an account?&nbsp;
-            <Link to="/signup">Sign Up!</Link>
           </p>
         </div>
       </div>

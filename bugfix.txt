@@ -1,0 +1,1 @@
+https://stackoverflow.com/questions/66459081/parcel-semver-bug

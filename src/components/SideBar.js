@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import s from 'styled-components'
 import axios from 'axios'
+import blankUserIcon from 'url:../../blankUser.png' // Temp photo
 import Upload from './Upload'
 import Settings from './Settings'
-import blankUserIcon from '../../blankUser.png' // Temp photo
 
 const Wrapper = s.div`
   border-right: 1px solid #d3d3d3;

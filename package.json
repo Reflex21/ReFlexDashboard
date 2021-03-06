@@ -1,0 +1,43 @@
+{
+  "name": "ReFlexDashboard",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anthonyistewart/ReFlexDashboard.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anthonyistewart/ReFlexDashboard/issues"
+  },
+  "homepage": "https://github.com/anthonyistewart/ReFlexDashboard#readme",
+  "devDependencies": {
+    "eslint-plugin-import": "^2.21.2",
+    "eslint-plugin-jsx-a11y": "^6.3.0",
+    "eslint-plugin-react": "^7.20.0",
+    "eslint-plugin-react-hooks": "^4 || ^3 || ^2.3.0 || ^1.7.0"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.2.0",
+    "npm-force-resolutions": "0.0.10",
+    "parcel": "^2.0.0-beta.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-is": "^17.0.1",
+    "react-router-dom": "^5.2.0",
+    "react-token-auth": "^1.1.8",
+    "recharts": "^2.0.8",
+    "styled-components": "^5.2.1",
+    "xlsx": "^0.16.9"
+  }
+}
