@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import s from 'styled-components'
-import axios from 'axios'
 import blankUserIcon from 'url:../../blankUser.png' // Temp photo
 import Upload from './Upload'
 import Settings from './Settings'
+import axiosInstance from '../client'
+import AuthService from '../auth/auth-service'
 
 const Wrapper = s.div`
   border-right: 1px solid #d3d3d3;
@@ -15,9 +16,17 @@ const LeftSideBar = s.ul`
   height: calc(100vh - 70px);
 `
 
-const SideBar = ({ setCurrentView, currentUser }) => {
+const SideBar = ({ setCurrentView, token, user }) => {
+  const { username } = AuthService.getCurrentUser()
   const importData = async data => {
-    const res = await axios.post('/api/data/add', { data })
+    const res = await axiosInstance.post('/api/data/add', { data },
+      {
+        headers: {
+          authorization: token,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      })
     if (res.data !== 'Data Added') {
       alert(res.data)
     }
@@ -37,7 +46,7 @@ const SideBar = ({ setCurrentView, currentUser }) => {
               width="100"
               alt=""
             />
-            <h6 className="text-center">Welcome {currentUser.charAt(0).toUpperCase() + currentUser.slice(1)}!</h6>
+            <h6 className="text-center">Welcome {username}!</h6>
           </div>
           <li className="nav-item border-bottom">
             <a

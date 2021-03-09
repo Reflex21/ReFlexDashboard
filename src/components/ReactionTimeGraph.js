@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import axios from 'axios'
 import { ScatterChart, Scatter, Tooltip, YAxis, XAxis, Label } from 'recharts'
 
-const ReactionTimeGraph = ({ currentUser }) => {
+const ReactionTimeGraph = ({ user }) => {
   const [showLatest, setShowLatest] = useState(true)
   const [reactionTimeData, setReactionTimeData] = useState([])
   const stateRef = useRef()
@@ -10,7 +10,7 @@ const ReactionTimeGraph = ({ currentUser }) => {
   stateRef.current = showLatest
 
   const getReactionTimeData = async () => {
-    const res = await axios.get(`/api/data/${currentUser}/time`)
+    const res = await axios.get(`/api/data/${user}/time`)
     return res
   }
 

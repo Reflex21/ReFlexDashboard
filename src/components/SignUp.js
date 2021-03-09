@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
-import axios from 'axios'
-
 import { Link, useHistory } from 'react-router-dom'
+import AuthService from '../auth/auth-service'
 
 const SignUp = () => {
   const [username, setUsername] = useState('')
@@ -9,11 +8,12 @@ const SignUp = () => {
   const history = useHistory()
 
   const signup = async () => {
-    const res = await axios.post('/account/signup', { username, password })
-    if (res.data === 'User Created') {
+    const res = await AuthService.signup(username, password)
+    console.log(res)
+    if (res.access_token) {
       history.push('/')
     } else {
-      alert(res.data)
+      alert(res.message)
     }
   }
 

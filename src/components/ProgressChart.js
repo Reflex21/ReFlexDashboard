@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import axios from 'axios'
 import { PieChart, Pie, RadialBarChart, RadialBar, Tooltip } from 'recharts'
 
-const ProgressChart = ({ currentUser }) => {
+const ProgressChart = ({ user }) => {
   const dataFPS = [
     {
       value: 70,

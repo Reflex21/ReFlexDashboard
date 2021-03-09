@@ -1,19 +1,20 @@
 import React, { useState } from 'react'
-import axios from 'axios'
 
 import { Link, useHistory } from 'react-router-dom'
+import AuthService from '../auth/auth-service'
 
-const Login = () => {
+const Login = ({ setUser, setToken }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const history = useHistory()
 
-  const login = async () => {
-    const res = await axios.post('/api/login', { username, password })
-    if (res.data.token) {
-      console.log(res.data.token)
+  const loginUser = async () => {
+    const res = await AuthService.login(username, password)
+    console.log(res)
+    if (res.access_token) {
+      history.push('/')
     } else {
-      alert('Please type in correct username/password')
+      alert(res.message)
     }
   }
 
@@ -42,13 +43,14 @@ const Login = () => {
             <button
               type="button"
               className="btn btn-primary w-100"
-              onClick={() => login(username, password, history)}
+              onClick={() => loginUser(username, password)}
             >
               Log In
             </button>
           </div>
           <p>
             Don&apos;t have an account?&nbsp;
+            <Link to="/signup">Sign Up!</Link>
           </p>
         </div>
       </div>

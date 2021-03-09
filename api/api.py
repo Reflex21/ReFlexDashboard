@@ -2,9 +2,11 @@ import time
 import flask
 import flask_sqlalchemy
 import flask_praetorian
+import flask_cors
 
 db = flask_sqlalchemy.SQLAlchemy()
 guard = flask_praetorian.Praetorian()
+cors = flask_cors.CORS()
 
 
 class User(db.Model):
@@ -70,6 +72,16 @@ class User(db.Model):
         """
         return cls.query.get(id)
 
+    @classmethod
+    def add_user(cls, app, username, password):
+        try:
+            with app.app_context():
+                new_user = cls(username=username, password=guard.hash_password(password))
+                db.session.add(new_user)
+                db.session.commit()
+        except Exception as e:
+                print(e)
+
 
 class DataPoint(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -104,29 +116,14 @@ app.config["JWT_REFRESH_LIFESPAN"] = {"days": 30}
 guard.init_app(app, User)
 
 # Initialize a local database for the example
+# TODO: Change this to access MYSQL db instead
 local_database = "test.db"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///{}".format(local_database)
 db.init_app(app)
 
-"""
-# Add users for the example
-with app.app_context():
-    db.create_all()
-    db.session.add(
-        User(
-            username="astewart",
-            hashed_password=guard.hash_password("test"),
-            roles="admin",
-        )
-    )
-    db.session.add(
-        User(
-            username="random",
-            hashed_password=guard.hash_password("hi"),
-        )
-    )
-    db.session.commit()
-"""
+# Initializes CORS so that the api_tool can talk to the app
+cors.init_app(app)
+
 
 @app.route("/api/login", methods=["POST"])
 def login():
@@ -137,46 +134,84 @@ def login():
        $ curl http://localhost:5000/login -X POST \
          -d '{"username":"Walter","password":"calmerthanyouare"}'
     """
-    req = flask.request.get_json(force=True)
-    username = req.get("username", None)
-    password = req.get("password", None)
-    user = guard.authenticate(username, password)
-    ret = {"access_token": guard.encode_jwt_token(user)}
-    return flask.jsonify(ret), 200
+    try:
+        req = flask.request.get_json(force=True)
+        username = req.get("username", None)
+        password = req.get("password", None)
+        user = guard.authenticate(username, password)
+        ret = {"access_token": guard.encode_jwt_token(user)}
+        return flask.jsonify(ret), 200
+
+    except Exception as e:
+        return flask.jsonify(message=str(e))
 
 
-@app.route("/protected")
-@flask_praetorian.auth_required
-def protected():
+@app.route("/api/signup", methods=["POST"])
+def signup():
     """
-    A protected endpoint. The auth_required decorator will require a header
-    containing a valid JWT
+    Creates a user by parsing a POST request containing user credentials and
+    issuing a JWT token.
     .. example::
-       $ curl http://localhost:5000/protected -X GET \
-         -H "Authorization: Bearer <your_token>"
+       $ curl http://localhost:5000/login -X POST \
+         -d '{"username":"Walter","password":"calmerthanyouare"}'
     """
-    return flask.jsonify(
-        message="protected endpoint (allowed user {})".format(
-            flask_praetorian.current_user().username,
-        )
-    )
+    try:
+        req = flask.request.get_json(force=True)
+        username = req.get("username", None)
+        password = req.get("password", None)
+
+        if User.query.filter_by(username = username).first() is None:
+            with app.app_context():
+                db.session.add(
+                    User(
+                        username=username,
+                        hashed_password=guard.hash_password(password),
+                        roles="user",
+                    )
+                )
+                db.session.commit()
+            user = guard.authenticate(username, password)
+            ret = {"access_token": guard.encode_jwt_token(user)}
+            return flask.jsonify(ret), 200
+        else:
+            return flask.jsonify(message="User already exists.")
+
+    except Exception as e:
+        return flask.jsonify(message=str(e))
 
 
-@app.route("/protected_admin_required")
-@flask_praetorian.roles_required("admin")
-def protected_admin_required():
-    """
-    A protected endpoint that requires a role. The roles_required decorator
-    will require that the supplied JWT includes the required roles
-    .. example::
-       $ curl http://localhost:5000/protected_admin_required -X GET \
-          -H "Authorization: Bearer <your_token>"
-    """
-    return flask.jsonify(
-        message="protected_admin_required endpoint (allowed user {})".format(
-            flask_praetorian.current_user().username,
-        )
-    )
+# @app.route("/protected")
+# @flask_praetorian.auth_required
+# def protected():
+#     """
+#     A protected endpoint. The auth_required decorator will require a header
+#     containing a valid JWT
+#     .. example::
+#        $ curl http://localhost:5000/protected -X GET \
+#          -H "Authorization: Bearer <your_token>"
+#     """
+#     return flask.jsonify(
+#         message="protected endpoint (allowed user {})".format(
+#             flask_praetorian.current_user().username,
+#         )
+#     )
+
+
+# @app.route("/protected_admin_required")
+# @flask_praetorian.roles_required("admin")
+# def protected_admin_required():
+#     """
+#     A protected endpoint that requires a role. The roles_required decorator
+#     will require that the supplied JWT includes the required roles
+#     .. example::
+#        $ curl http://localhost:5000/protected_admin_required -X GET \
+#           -H "Authorization: Bearer <your_token>"
+#     """
+#     return flask.jsonify(
+#         message="protected_admin_required endpoint (allowed user {})".format(
+#             flask_praetorian.current_user().username,
+#         )
+#     )
 
 
 @app.route("/api/data/add", methods=['POST'])
@@ -184,24 +219,38 @@ def protected_admin_required():
 def add_data():
     try:
         content = flask.request.get_json(force=True) # This grabs JSON object sent over
-    except Exception:
-        pass
-    finally:
-        return flask.jsonify("Success")
+        return flask.jsonify(message="Success")
+
+    except Exception as e:
+        return flask.jsonify(message=str(e))
 
 
 @app.route("/api/data/<type>", methods=['GET'])
 @flask_praetorian.auth_required
 def get_data(type):
-    user = User.query.filter_by(username=flask_praetorian.current_user().username).first()
-    print(user.id)
-    print(type)
-    results = [r.to_dict() for r in DataPoint.query.filter_by(user_id=user.id, type=type).all()]
-    print(results)
+    try:
+        user = User.query.filter_by(username=flask_praetorian.current_user().username).first()
+        print(user.id)
+        print(type)
+        results = [r.to_dict() for r in DataPoint.query.filter_by(user_id=user.id, type=type).all()]
+        print(results)
+        return flask.jsonify(results)
 
-    return flask.jsonify(results)
+    except Exception as e:
+        return flask.jsonify(message=str(e))
 
 
-# Run the example
+@app.route("/api/userinfo", methods=['GET'])
+@flask_praetorian.auth_required
+def get_userinfo():
+    try:
+        user = User.query.filter_by(username=flask_praetorian.current_user().username).first()
+        return flask.jsonify({"username": user.username})
+
+    except Exception as e:
+        return flask.jsonify(message=str(e))
+
+
+# Run the app
 if __name__ == "__main__":
     app.run(host="localhost", port=5000)

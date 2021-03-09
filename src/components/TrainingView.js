@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import ProgressChart from './ProgressChart'
 
-const TrainingView = ({ currentUser }) => {
+const TrainingView = ({ user }) => {
 
   return (
     <div className="col-10">
@@ -12,7 +12,7 @@ const TrainingView = ({ currentUser }) => {
           <div className="card">
             <div className="card-body">
               <h5 className="card-title">Training Progress</h5>
-              <ProgressChart currentUser={currentUser} />
+              <ProgressChart user={user} />
             </div>
           </div>
         </div>

@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react'
-import axios from 'axios'
 import { ScatterChart, Scatter, Tooltip, YAxis, XAxis, Label } from 'recharts'
+import UserService from '../auth/user-service'
 
-const AccuracyGraph = ({ currentUser }) => {
+const AccuracyGraph = () => {
   const [showLatest, setShowLatest] = useState(true)
   const [accuracyData, setAccuracyData] = useState([])
   const stateRef = useRef()
@@ -10,26 +10,27 @@ const AccuracyGraph = ({ currentUser }) => {
   stateRef.current = showLatest
 
   const getAccuracyData = async () => {
-    const res = await axios.get(`/api/data/${currentUser}/accuracy`)
+    const res = await UserService.getUserAccuracyData()
     return res
   }
 
   const reformatData = data => {
     const formattedData = []
-    const len = data.trial.length
+    const len = data.length
     for (let i = 0; i < len; i += 1) {
       formattedData.push({
-        trial: data.trial[i],
-        accuracy: data.accuracy[i],
+        trial: i,
+        accuracy: data[i].value,
       })
     }
     return formattedData
   }
 
   const getLatest = data => {
+    console.log(data)
     let latest = data[0]
     data.forEach((item, index) => {
-      if (item.createdAt > latest.createdAt) {
+      if (item.timestamp > latest.timestamp) {
         latest = item
       }
     })
@@ -39,7 +40,7 @@ const AccuracyGraph = ({ currentUser }) => {
   const getAvg = data => {
     const avg = []
     data.forEach((item, index) => {
-      const avgAccuracy = (item.accuracy.reduce((a, b) => a + b, 0)) / item.accuracy.length
+      const avgAccuracy = (item.value.reduce((a, b) => a + b, 0)) / data.length
       avg.push({
         trial: index + 1,
         accuracy: avgAccuracy,
@@ -55,11 +56,11 @@ const AccuracyGraph = ({ currentUser }) => {
           const latest = getLatest(res.data)
           setAccuracyData(reformatData(latest))
         } else {
-          const avg = getAvg(res.data)
+          getAvg(res.data)
           setAccuracyData(avg)
         }
       })
-    }, 1000)
+    }, 10000)
 
     return () => clearInterval(intervalID)
   }, [])

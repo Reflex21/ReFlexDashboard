@@ -1,36 +1,44 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
 import { Redirect, useHistory } from 'react-router-dom'
 import Header from './Header'
 import SideBar from './SideBar'
 import InsightView from './InsightView'
 import TrainingView from './TrainingView'
+import AuthService from '../auth/auth-service'
 
-const HomePage = ({ isLoggedIn, currentUser }) => {
+const HomePage = () => {
   const [currentView, setCurrentView] = useState(0)
+  const [isLogged, setIsLogged] = useState(AuthService.isLogged())
+
+  useEffect(() => {
+    const intervalID = setInterval(() => {
+      setIsLogged(AuthService.isLogged())
+    }, 1000)
+
+    return () => clearInterval(intervalID)
+  }, [])
 
   return (
     <>
-      <Header />
-      {(isLoggedIn) && (
+      {(isLogged) && (
       <>
+        <Header />
         <div className="container-fluid w-100 h-100">
           <div className="row">
             <SideBar
-              currentUser={currentUser}
               setCurrentView={setCurrentView}
             />
             {
-              (currentView === 0) && (<InsightView currentUser={currentUser} />)
+              (currentView === 0) && (<InsightView />)
             }
             {
-              (currentView === 1) && (<TrainingView currentUser={currentUser} />)
+              (currentView === 1) && (<TrainingView />)
             }
           </div>
         </div>
       </>
       )}
-      {(!isLoggedIn) && (
+      {(!isLogged) && (
         <Redirect to="/login" />
       )}
     </>

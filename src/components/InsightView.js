@@ -3,17 +3,17 @@ import axios from 'axios'
 import AccuracyGraph from './AccuracyGraph'
 import ReactionTimeGraph from './ReactionTimeGraph'
 
-const InsightView = ({ currentUser }) => {
+const InsightView = () => {
 
   return (
     <div className="col-10">
       <div className="row p-5">
         <div className="col-6">
-          <AccuracyGraph currentUser={currentUser} />
+          <AccuracyGraph />
         </div>
 
         <div className="col-6">
-          <ReactionTimeGraph currentUser={currentUser} />
+          <ReactionTimeGraph />
         </div>
 
       </div>
