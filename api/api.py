@@ -3,6 +3,8 @@ import flask
 import flask_sqlalchemy
 import flask_praetorian
 import flask_cors
+import random
+import string
 
 db = flask_sqlalchemy.SQLAlchemy()
 guard = flask_praetorian.Praetorian()
@@ -14,6 +16,7 @@ class User(db.Model):
     username = db.Column(db.Text, unique=True)
     hashed_password = db.Column(db.Text)
     roles = db.Column(db.Text)
+    api_key = db.Column(db.Text, unique=True)
 
     @property
     def identity(self):
@@ -159,14 +162,17 @@ def signup():
         req = flask.request.get_json(force=True)
         username = req.get("username", None)
         password = req.get("password", None)
+        chars = string.ascii_letters + string.digits
+        key = ''.join(random.choice(chars) for i in range(255))
 
-        if User.query.filter_by(username = username).first() is None:
+        if User.query.filter_by(username=username).first() is None:
             with app.app_context():
                 db.session.add(
                     User(
                         username=username,
                         hashed_password=guard.hash_password(password),
                         roles="user",
+                        api_key=key,
                     )
                 )
                 db.session.commit()
@@ -242,7 +248,7 @@ def get_data(type):
 def get_userinfo():
     try:
         user = User.query.filter_by(username=flask_praetorian.current_user().username).first()
-        return flask.jsonify({"username": user.username})
+        return flask.jsonify({"username": user.username, "api_key":user.api_key})
 
     except Exception as e:
         return flask.jsonify(message=str(e))
