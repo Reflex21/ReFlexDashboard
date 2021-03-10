@@ -230,10 +230,7 @@ def add_data():
 def get_data(type):
     try:
         user = User.query.filter_by(username=flask_praetorian.current_user().username).first()
-        print(user.id)
-        print(type)
         results = [r.to_dict() for r in DataPoint.query.filter_by(user_id=user.id, type=type).all()]
-        print(results)
         return flask.jsonify(results)
 
     except Exception as e:

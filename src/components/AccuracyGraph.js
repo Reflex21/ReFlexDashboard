@@ -16,36 +16,40 @@ const AccuracyGraph = () => {
 
   const reformatData = data => {
     const formattedData = []
-    const len = data.length
-    for (let i = 0; i < len; i += 1) {
+    data.forEach((item, index) => {
       formattedData.push({
-        trial: i,
-        accuracy: data[i].value,
+        trial: index,
+        accuracy: item.value,
       })
-    }
+    })
     return formattedData
   }
 
   const getLatest = data => {
     console.log(data)
-    let latest = data[0]
-    data.forEach((item, index) => {
-      if (item.timestamp > latest.timestamp) {
-        latest = item
-      }
-    })
-    return latest
+    data.sort((a, b) => ((a.timestamp > b.timestamp) ? 1 : -1))
+    const latest = data.slice(Math.max(data.length - 10, 0))
+    return reformatData(latest)
   }
 
   const getAvg = data => {
+    const maxSet = data.reduce((max, p) => (p.set_id > max ? p.set_id : max), data[0].set_id)
+    console.log(maxSet)
     const avg = []
-    data.forEach((item, index) => {
-      const avgAccuracy = (item.value.reduce((a, b) => a + b, 0)) / data.length
-      avg.push({
-        trial: index + 1,
-        accuracy: avgAccuracy,
+    let i
+    for (i = 0; i < maxSet + 1; i++) {
+      const currentSet = data.filter(x => x.set_id == i)
+      let avgAccuracy = 0
+      const len = currentSet.length
+      currentSet.forEach((item, index) => {
+        avgAccuracy += item.value
       })
-    })
+      avg.push({
+        trial: i + 1,
+        accuracy: avgAccuracy / len,
+      })
+    }
+    console.log(avg)
     return avg
   }
 
@@ -54,13 +58,13 @@ const AccuracyGraph = () => {
       getAccuracyData().then(res => {
         if (stateRef.current) {
           const latest = getLatest(res.data)
-          setAccuracyData(reformatData(latest))
+          setAccuracyData(latest)
         } else {
-          getAvg(res.data)
+          const avg = getAvg(res.data)
           setAccuracyData(avg)
         }
       })
-    }, 10000)
+    }, 5000)
 
     return () => clearInterval(intervalID)
   }, [])
