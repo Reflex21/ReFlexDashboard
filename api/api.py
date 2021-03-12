@@ -257,4 +257,8 @@ def get_userinfo():
 
 # Run the app
 if __name__ == "__main__":
+<<<<<<< HEAD
     app.run(host="0.0.0.0", port=5000)
+=======
+    app.run(host="localhost", port=5000)
+>>>>>>> 5f95593bcd7d82f968e3df10013f84ec23a4b61a
