@@ -121,7 +121,7 @@ guard.init_app(app, User)
 # Initialize a local database for the example
 username = "FILL IN"
 password = "FILL IN"
-mysql_db_uri = "mysql+pymysql://{}:{}@localhost/reflex".format(username, password)
+mysql_db_uri = "mysql+pymysql://{}:{}@localhost/Reflex".format(username, password)
 app.config["SQLALCHEMY_DATABASE_URI"] = mysql_db_uri
 db.init_app(app)
 
