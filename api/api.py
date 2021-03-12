@@ -119,8 +119,8 @@ app.config["JWT_REFRESH_LIFESPAN"] = {"days": 30}
 guard.init_app(app, User)
 
 # Initialize a local database for the example
-username = "FILL IN"
-password = "FILL IN"
+username = "reflex"
+password = "ReflexDash21@"
 mysql_db_uri = "mysql+pymysql://{}:{}@localhost/Reflex".format(username, password)
 app.config["SQLALCHEMY_DATABASE_URI"] = mysql_db_uri
 db.init_app(app)
