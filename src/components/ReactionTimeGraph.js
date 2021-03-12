@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import axios from 'axios'
 import { ScatterChart, Scatter, Tooltip, YAxis, XAxis, Label } from 'recharts'
+import UserService from '../auth/user-service'
 
 const ReactionTimeGraph = ({ user }) => {
   const [showLatest, setShowLatest] = useState(true)
@@ -10,49 +11,51 @@ const ReactionTimeGraph = ({ user }) => {
   stateRef.current = showLatest
 
   const getReactionTimeData = async () => {
-    const res = await axios.get(`/api/data/${user}/time`)
+    const res = await UserService.getUserReactionData()
     return res
   }
 
   const reformatData = data => {
     const formattedData = []
-    const len = data.trial.length
-    for (let i = 0; i < len; i += 1) {
+    data.forEach((item, index) => {
       formattedData.push({
-        trial: data.trial[i],
-        time: data.time[i],
+        trial: index,
+        time: item.value,
       })
-    }
+    })
     return formattedData
   }
 
   const getLatest = data => {
-    let latest = data[0]
-    data.forEach((item, index) => {
-      if (item.createdAt > latest.createdAt) {
-        latest = item
-      }
-    })
-    return latest
+    data.sort((a, b) => ((a.timestamp > b.timestamp) ? 1 : -1))
+    const latest = data.slice(Math.max(data.length - 10, 0))
+    return reformatData(latest)
   }
 
   const getAvg = data => {
+    const maxSet = data.reduce((max, p) => (p.set_id > max ? p.set_id : max), data[0].set_id)
     const avg = []
-    data.forEach((item, index) => {
-      const avgTime = (item.time.reduce((a, b) => a + b, 0)) / item.time.length
-      avg.push({
-        trial: index + 1,
-        time: avgTime,
+    let i
+    for (i = 0; i < maxSet + 1; i++) {
+      const currentSet = data.filter(x => x.set_id == i)
+      let avgTime = 0
+      const len = currentSet.length
+      currentSet.forEach((item, index) => {
+        avgTime += item.value
       })
-    })
-    console.log(avg)
+      avg.push({
+        trial: i + 1,
+        accuracy: avgTime / len,
+      })
+    }
     return avg
   }
+
   const refreshData = () => {
     getReactionTimeData().then(res => {
       if (stateRef.current) {
         const latest = getLatest(res.data)
-        setReactionTimeData(reformatData(latest))
+        setReactionTimeData(latest)
       } else {
         const avg = getAvg(res.data)
         setReactionTimeData(avg)

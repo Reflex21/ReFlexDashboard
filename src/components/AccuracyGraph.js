@@ -26,7 +26,6 @@ const AccuracyGraph = () => {
   }
 
   const getLatest = data => {
-    console.log(data)
     data.sort((a, b) => ((a.timestamp > b.timestamp) ? 1 : -1))
     const latest = data.slice(Math.max(data.length - 10, 0))
     return reformatData(latest)
@@ -34,7 +33,6 @@ const AccuracyGraph = () => {
 
   const getAvg = data => {
     const maxSet = data.reduce((max, p) => (p.set_id > max ? p.set_id : max), data[0].set_id)
-    console.log(maxSet)
     const avg = []
     let i
     for (i = 0; i < maxSet + 1; i++) {
@@ -49,7 +47,6 @@ const AccuracyGraph = () => {
         accuracy: avgAccuracy / len,
       })
     }
-    console.log(avg)
     return avg
   }
 

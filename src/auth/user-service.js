@@ -7,6 +7,10 @@ class UserService {
   getUserAccuracyData() {
     return axios.get(API_URL + 'data/accuracy', { headers: authHeader() })
   }
+
+  getUserReactionData() {
+    return axios.get(API_URL + 'data/reaction', { headers: authHeader() })
+  }
 }
 
 export default new UserService()

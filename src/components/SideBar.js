@@ -17,7 +17,8 @@ const LeftSideBar = s.ul`
 `
 
 const SideBar = ({ setCurrentView, token, user }) => {
-  const { username } = AuthService.getCurrentUser()
+  const { username, api_token } = AuthService.getCurrentUser()
+
   const importData = async data => {
     const res = await axiosInstance.post('/api/data/add', { data },
       {
@@ -35,7 +36,7 @@ const SideBar = ({ setCurrentView, token, user }) => {
   return (
     <>
       <Upload importData={importData} />
-      <Settings />
+      <Settings api_token={api_token} />
       <Wrapper className="col-2 bg-light p-0">
         <LeftSideBar className="nav nav-pills flex-column">
           <div className="nav-item border-bottom text-center pt-3">

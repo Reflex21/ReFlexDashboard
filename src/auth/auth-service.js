@@ -12,7 +12,11 @@ class AuthService {
       })
       .then(res => {
         if (res.data.access_token) {
-          const data = { username, access_token: res.data.access_token }
+          const data = {
+            username,
+            access_token: res.data.access_token,
+            api_token: res.data.api_token,
+          }
           localStorage.setItem('user', JSON.stringify(data))
         }
         return res.data

@@ -1,6 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
+import AuthService from '../auth/auth-service'
 
-const Settings = () => {
+const Settings = ({ api_token }) => {
+  const [showToken, setShowToken] = useState(false)
+
   return (
     <div className="modal" id="settingsBox" tabIndex="-1" role="dialog">
       <div className="modal-dialog" role="document">
@@ -13,6 +16,21 @@ const Settings = () => {
           </div>
           <div className="modal-body text-center">
             <p>Change your preferences here!</p>
+            {
+              (showToken) && (
+                <p>API Token: {api_token}</p>
+              )
+            }
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={e => {
+                e.preventDefault()
+                setShowToken(!showToken)
+              }}
+            >
+              Show/Hide API Token
+            </button>
           </div>
           <div className="modal-footer">
             <button type="button" className="btn btn-primary">Save</button>

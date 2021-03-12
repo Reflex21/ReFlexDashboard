@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 
 import { Link, useHistory } from 'react-router-dom'
 import AuthService from '../auth/auth-service'
@@ -7,13 +7,17 @@ const Login = ({ setUser, setToken }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const history = useHistory()
+  const loginButton = useRef()
 
   const loginUser = async () => {
+    loginButton.current.setAttribute('disabled', 'disabled')
+
     const res = await AuthService.login(username, password)
-    console.log(res)
     if (res.access_token) {
+      loginButton.current.removeAttribute('disabled')
       history.push('/')
     } else {
+      loginButton.current.removeAttribute('disabled')
       alert(res.message)
     }
   }
@@ -41,6 +45,7 @@ const Login = ({ setUser, setToken }) => {
           </div>
           <div className="form-group text-center">
             <button
+              ref={loginButton}
               type="button"
               className="btn btn-primary w-100"
               onClick={() => loginUser(username, password)}
