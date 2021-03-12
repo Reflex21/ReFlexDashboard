@@ -92,7 +92,7 @@ class DataPoint(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     type = db.Column(db.Text)
     set_id = db.Column(db.Integer)
-    value = db.Column(db.Numeric(asdecimal=True))
+    value = db.Column(db.Float)
 
     def __repr__(self):
         return '<DataPoint %d>' % self.timestamp
