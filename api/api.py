@@ -13,10 +13,10 @@ cors = flask_cors.CORS()
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.Text, unique=True)
+    username = db.Column(db.Text)
     hashed_password = db.Column(db.Text)
     roles = db.Column(db.Text)
-    api_key = db.Column(db.Text, unique=True)
+    api_key = db.Column(db.Text)
 
     @property
     def identity(self):
@@ -119,8 +119,8 @@ app.config["JWT_REFRESH_LIFESPAN"] = {"days": 30}
 guard.init_app(app, User)
 
 # Initialize a local database for the example
-username = "reflex"
-password = "ReflexDash21@"
+username =  "dinesh97"
+password = "Reflex21"
 mysql_db_uri = "mysql+pymysql://{}:{}@localhost/Reflex".format(username, password)
 app.config["SQLALCHEMY_DATABASE_URI"] = mysql_db_uri
 db.init_app(app)
@@ -257,4 +257,8 @@ def get_userinfo():
 
 # Run the app
 if __name__ == "__main__":
+
     app.run(host="0.0.0.0", port=5000)
+
+
+
