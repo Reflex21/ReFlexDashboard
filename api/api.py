@@ -119,9 +119,10 @@ app.config["JWT_REFRESH_LIFESPAN"] = {"days": 30}
 guard.init_app(app, User)
 
 # Initialize a local database for the example
-# TODO: Change this to access MYSQL db instead
-local_database = "test.db"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///{}".format(local_database)
+username = "FILL IN"
+password = "FILL IN"
+mysql_db_uri = "mysql://{}:{}@localhost/reflex".format(username, password)
+app.config["SQLALCHEMY_DATABASE_URI"] = mysql_db_uri
 db.init_app(app)
 
 # Initializes CORS so that the api_tool can talk to the app
