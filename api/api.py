@@ -92,7 +92,7 @@ class DataPoint(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     type = db.Column(db.Text)
     set_id = db.Column(db.Integer)
-    value = db.Column(db.Numeric(asdecimal=False))
+    value = db.Column(db.Numeric(asdecimal=True))
 
     def __repr__(self):
         return '<DataPoint %d>' % self.timestamp
@@ -121,7 +121,7 @@ guard.init_app(app, User)
 # Initialize a local database for the example
 username = "FILL IN"
 password = "FILL IN"
-mysql_db_uri = "mysql://{}:{}@localhost/reflex".format(username, password)
+mysql_db_uri = "mysql+pymysql://{}:{}@localhost/reflex".format(username, password)
 app.config["SQLALCHEMY_DATABASE_URI"] = mysql_db_uri
 db.init_app(app)
 

@@ -48,22 +48,17 @@ const ReactionTimeGraph = ({ user }) => {
     console.log(avg)
     return avg
   }
-
-  useEffect(() => {
-    const intervalID = setInterval(() => {
-      getReactionTimeData().then(res => {
-        if (stateRef.current) {
-          const latest = getLatest(res.data)
-          setReactionTimeData(reformatData(latest))
-        } else {
-          const avg = getAvg(res.data)
-          setReactionTimeData(avg)
-        }
-      })
-    }, 1000)
-
-    return () => clearInterval(intervalID)
-  }, [])
+  const refreshData = () => {
+    getReactionTimeData().then(res => {
+      if (stateRef.current) {
+        const latest = getLatest(res.data)
+        setReactionTimeData(reformatData(latest))
+      } else {
+        const avg = getAvg(res.data)
+        setReactionTimeData(avg)
+      }
+    })
+  }
 
   return (
     <div className="card">
@@ -108,6 +103,13 @@ const ReactionTimeGraph = ({ user }) => {
           onClick={() => setShowLatest(false)}
         >
           Show Average
+        </button>
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={() => refreshData()}
+        >
+          Refresh
         </button>
       </div>
     </div>

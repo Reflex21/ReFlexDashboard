@@ -53,21 +53,17 @@ const AccuracyGraph = () => {
     return avg
   }
 
-  useEffect(() => {
-    const intervalID = setInterval(() => {
-      getAccuracyData().then(res => {
-        if (stateRef.current) {
-          const latest = getLatest(res.data)
-          setAccuracyData(latest)
-        } else {
-          const avg = getAvg(res.data)
-          setAccuracyData(avg)
-        }
-      })
-    }, 5000)
-
-    return () => clearInterval(intervalID)
-  }, [])
+  const refreshData = () => {
+    getAccuracyData().then(res => {
+      if (stateRef.current) {
+        const latest = getLatest(res.data)
+        setAccuracyData(latest)
+      } else {
+        const avg = getAvg(res.data)
+        setAccuracyData(avg)
+      }
+    })
+  }
 
   return (
     <div className="card">
@@ -112,6 +108,13 @@ const AccuracyGraph = () => {
           onClick={() => setShowLatest(false)}
         >
           Show Average
+        </button>
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={() => refreshData()}
+        >
+          Refresh
         </button>
       </div>
     </div>

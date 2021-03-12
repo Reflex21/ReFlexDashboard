@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 
-const API_URL = 'http://localhost:5000/api/'
+const API_URL = 'http://3.232.32.88:5000/api/'
 
 class AuthService {
   login(username, password) {
