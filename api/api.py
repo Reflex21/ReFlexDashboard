@@ -5,6 +5,7 @@ import flask_praetorian
 import flask_cors
 import random
 import string
+import constants
 
 db = flask_sqlalchemy.SQLAlchemy()
 guard = flask_praetorian.Praetorian()
@@ -119,10 +120,7 @@ app.config["JWT_REFRESH_LIFESPAN"] = {"days": 30}
 guard.init_app(app, User)
 
 # Initialize a local database for the example
-username =  "dinesh97"
-password = "Reflex21"
-mysql_db_uri = "mysql+pymysql://{}:{}@localhost/Reflex".format(username, password)
-app.config["SQLALCHEMY_DATABASE_URI"] = mysql_db_uri
+app.config["SQLALCHEMY_DATABASE_URI"] = constants.mysql_db_uri
 db.init_app(app)
 
 # Initializes CORS so that the api_tool can talk to the app
@@ -223,10 +221,24 @@ def signup():
 
 @app.route("/api/data/add", methods=['POST'])
 @flask_praetorian.auth_required
-def add_data():
+def add_data_dashboard():
     try:
         content = flask.request.get_json(force=True) # This grabs JSON object sent over
         return flask.jsonify(message="Success")
+
+    except Exception as e:
+        return flask.jsonify(message=str(e))
+
+
+@app.route("/api/data/unity", methods=['POST'])
+def add_data_unity():
+    try:
+        content = flask.request.get_json(force=True) # This grabs JSON object sent over
+        user = User.query.filter_by(api_key=content['api_key']).first()
+        if(user):
+            return flask.jsonify(message="Success")
+        else:
+            return flask.jsonify(message="Invalid API Key")
 
     except Exception as e:
         return flask.jsonify(message=str(e))

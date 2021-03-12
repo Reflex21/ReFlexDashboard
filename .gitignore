@@ -3,6 +3,7 @@
 **/dist
 **/node_modules
 **/.parcel-cache
+constants.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -142,3 +143,4 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+api/constants.py
