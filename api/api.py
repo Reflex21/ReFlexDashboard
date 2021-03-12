@@ -141,7 +141,7 @@ def login():
         username = req.get("username", None)
         password = req.get("password", None)
         user = guard.authenticate(username, password)
-        ret = {"access_token": guard.encode_jwt_token(user)}
+        ret = {"access_token": guard.encode_jwt_token(user), "api_key":user.api_key}
         return flask.jsonify(ret), 200
 
     except Exception as e:
@@ -176,7 +176,7 @@ def signup():
                 )
                 db.session.commit()
             user = guard.authenticate(username, password)
-            ret = {"access_token": guard.encode_jwt_token(user)}
+            ret = {"access_token": guard.encode_jwt_token(user), "api_key":user.api_key}
             return flask.jsonify(ret), 200
         else:
             return flask.jsonify(message="User already exists.")
