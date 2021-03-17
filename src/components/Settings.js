@@ -18,7 +18,7 @@ const Settings = ({ api_key }) => {
             <p>Change your preferences here!</p>
             {
               (showToken) && (
-                <p style={{ 'word-break': 'break-all' }}>
+                <p style={{ wordBreak: 'break-all' }}>
                   <b>API Token:</b>
                   {api_key}
                 </p>
