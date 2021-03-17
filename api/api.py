@@ -231,25 +231,28 @@ def add_data_dashboard():
         else:
             set_id = max_set_id + 1
 
-        data_type = content['data']['type']
-        game_type = content['data']['game']
-        datapoints = content['data']['datapoints']
-        timestamp = int(time.time())
         data_list = []
 
-        for d in datapoints:
-            data_list.append(DataPoint(
-                timestamp=timestamp,
-                user_id = user.id,
-                type=data_type,
-                game=game_type,
-                set_id=set_id,
-                value=d
-            ))
+        for data_entry in content['data']:
+            data_type = data_entry['type']
+            game_type = data_entry['game']
+            datapoints = data_entry['datapoints']
+            timestamp = int(time.time())
+
+            for d in datapoints:
+                data_list.append(DataPoint(
+                    timestamp=timestamp,
+                    user_id=user.id,
+                    type=data_type,
+                    game=game_type,
+                    set_id=set_id,
+                    value=d
+                ))
 
         with app.app_context():
             for obj in data_list:
                 db.session.add(obj)
+
             db.session.commit()
 
         return flask.jsonify(message="Success")
@@ -273,21 +276,23 @@ def add_data_unity():
             else:
                 set_id = max_set_id + 1
 
-            data_type = content['data']['type']
-            game_type = content['data']['game']
-            datapoints = content['data']['datapoints']
-            timestamp = int(time.time())
             data_list = []
 
-            for d in datapoints:
-                data_list.append(DataPoint(
-                    timestamp=timestamp,
-                    user_id=user.id,
-                    type=data_type,
-                    game=game_type,
-                    set_id=set_id,
-                    value=d
-                ))
+            for data_entry in content['data']:
+                data_type = data_entry['type']
+                game_type = data_entry['game']
+                datapoints = data_entry['datapoints']
+                timestamp = int(time.time())
+
+                for d in datapoints:
+                    data_list.append(DataPoint(
+                        timestamp=timestamp,
+                        user_id=user.id,
+                        type=data_type,
+                        game=game_type,
+                        set_id=set_id,
+                        value=d
+                    ))
 
             with app.app_context():
                 for obj in data_list:
