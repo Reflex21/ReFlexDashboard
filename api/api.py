@@ -6,6 +6,7 @@ import flask_cors
 import random
 import string
 import constants
+from sqlalchemy import func
 
 db = flask_sqlalchemy.SQLAlchemy()
 guard = flask_praetorian.Praetorian()
@@ -76,21 +77,12 @@ class User(db.Model):
         """
         return cls.query.get(id)
 
-    @classmethod
-    def add_user(cls, app, username, password):
-        try:
-            with app.app_context():
-                new_user = cls(username=username, password=guard.hash_password(password))
-                db.session.add(new_user)
-                db.session.commit()
-        except Exception as e:
-                print(e)
-
 
 class DataPoint(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    game = db.Column(db.Text)
     type = db.Column(db.Text)
     set_id = db.Column(db.Integer)
     value = db.Column(db.Float)
@@ -125,6 +117,11 @@ db.init_app(app)
 
 # Initializes CORS so that the api_tool can talk to the app
 cors.init_app(app)
+
+# Only uncomment to initialize DB
+# with app.app_context():
+#     db.create_all()
+#     db.session.commit()
 
 
 @app.route("/api/login", methods=["POST"])
@@ -223,7 +220,38 @@ def signup():
 @flask_praetorian.auth_required
 def add_data_dashboard():
     try:
-        content = flask.request.get_json(force=True) # This grabs JSON object sent over
+        user = User.query.filter_by(username=flask_praetorian.current_user().username).first()
+        content = flask.request.get_json(force=True)  # This grabs JSON object sent over
+
+        # Get the current set_id so we know what to insert into the db
+        set_id = 0
+        max_set_id = db.session.query(func.max(DataPoint.set_id)).scalar()
+        if max_set_id is None:
+            set_id = 0
+        else:
+            set_id = max_set_id + 1
+
+        data_type = content['data']['type']
+        game_type = content['data']['game']
+        datapoints = content['data']['datapoints']
+        timestamp = int(time.time())
+        data_list = []
+
+        for d in datapoints:
+            data_list.append(DataPoint(
+                timestamp=timestamp,
+                user_id = user.id,
+                type=data_type,
+                game=game_type,
+                set_id=set_id,
+                value=d
+            ))
+
+        with app.app_context():
+            for obj in data_list:
+                db.session.add(obj)
+            db.session.commit()
+
         return flask.jsonify(message="Success")
 
     except Exception as e:
@@ -233,9 +261,54 @@ def add_data_dashboard():
 @app.route("/api/data/unity", methods=['POST'])
 def add_data_unity():
     try:
-        content = flask.request.get_json(force=True) # This grabs JSON object sent over
+        content = flask.request.get_json(force=True)  # This grabs JSON object sent over
         user = User.query.filter_by(api_key=content['api_key']).first()
-        if(user):
+
+        if user:
+            # Get the current set_id so we know what to insert into the db
+            set_id = 0
+            max_set_id = db.session.query(func.max(DataPoint.set_id)).scalar()
+            if max_set_id is None:
+                set_id = 0
+            else:
+                set_id = max_set_id + 1
+
+            data_type = content['data']['type']
+            game_type = content['data']['game']
+            datapoints = content['data']['datapoints']
+            timestamp = int(time.time())
+            data_list = []
+
+            for d in datapoints:
+                data_list.append(DataPoint(
+                    timestamp=timestamp,
+                    user_id=user.id,
+                    type=data_type,
+                    game=game_type,
+                    set_id=set_id,
+                    value=d
+                ))
+
+            with app.app_context():
+                for obj in data_list:
+                    db.session.add(obj)
+
+                db.session.commit()
+
+            return flask.jsonify(message="Success")
+        else:
+            return flask.jsonify(message="Invalid API Key")
+
+    except Exception as e:
+        return flask.jsonify(message=str(e))
+
+
+@app.route("/api/validate", methods=['POST'])
+def validate_api_key():
+    try:
+        content = flask.request.get_json(force=True)  # This grabs JSON object sent over
+        user = User.query.filter_by(api_key=content['api_key']).first()
+        if user:
             return flask.jsonify(message="Success")
         else:
             return flask.jsonify(message="Invalid API Key")
