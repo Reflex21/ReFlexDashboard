@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import AuthService from '../auth/auth-service'
 
-const Settings = ({ api_token }) => {
+const Settings = ({ api_key }) => {
   const [showToken, setShowToken] = useState(false)
 
   return (
@@ -18,7 +18,10 @@ const Settings = ({ api_token }) => {
             <p>Change your preferences here!</p>
             {
               (showToken) && (
-                <p>API Token: {api_token}</p>
+                <p style={{ 'word-break': 'break-all' }}>
+                  <b>API Token:</b>
+                  {api_key}
+                </p>
               )
             }
             <button

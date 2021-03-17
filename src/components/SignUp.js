@@ -12,7 +12,6 @@ const SignUp = () => {
   const signup = async () => {
     signupButton.current.setAttribute('disabled', 'disabled')
     const res = await AuthService.signup(username, password)
-    console.log(res)
     if (res.access_token) {
       signupButton.current.removeAttribute('disabled')
       history.push('/')

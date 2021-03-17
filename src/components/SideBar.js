@@ -5,6 +5,7 @@ import Upload from './Upload'
 import Settings from './Settings'
 import axiosInstance from '../client'
 import AuthService from '../auth/auth-service'
+import UserService from '../auth/user-service'
 
 const Wrapper = s.div`
   border-right: 1px solid #d3d3d3;
@@ -16,27 +17,17 @@ const LeftSideBar = s.ul`
   height: calc(100vh - 70px);
 `
 
-const SideBar = ({ setCurrentView, token, user }) => {
-  const { username, api_token } = AuthService.getCurrentUser()
+const SideBar = ({ setCurrentView }) => {
+  const { username, api_key } = AuthService.getCurrentUser()
 
   const importData = async data => {
-    const res = await axiosInstance.post('/api/data/add', { data },
-      {
-        headers: {
-          authorization: token,
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-      })
-    if (res.data !== 'Data Added') {
-      alert(res.data)
-    }
+    const res = await UserService.importUserData(data)
   }
 
   return (
     <>
       <Upload importData={importData} />
-      <Settings api_token={api_token} />
+      <Settings api_key={api_key} />
       <Wrapper className="col-2 bg-light p-0">
         <LeftSideBar className="nav nav-pills flex-column">
           <div className="nav-item border-bottom text-center pt-3">

@@ -11,6 +11,11 @@ class UserService {
   getUserReactionData() {
     return axios.get(API_URL + 'data/reaction', { headers: authHeader() })
   }
+
+  importUserData(data) {
+    alert('Function not implemented')
+    // const res = await axios.post(API_URL + 'data/add', { headers: authHeader() })
+  }
 }
 
 export default new UserService()

@@ -8,14 +8,14 @@ class AuthService {
     return axios
       .post(API_URL + 'login', {
         username,
-        password
+        password,
       })
       .then(res => {
         if (res.data.access_token) {
           const data = {
             username,
             access_token: res.data.access_token,
-            api_token: res.data.api_token,
+            api_key: res.data.api_key,
           }
           localStorage.setItem('user', JSON.stringify(data))
         }
@@ -30,10 +30,14 @@ class AuthService {
   signup(username, password) {
     return axios.post(API_URL + 'signup', {
       username,
-      password
+      password,
     }).then(res => {
       if (res.data.access_token) {
-        const data = { username, access_token: res.data.access_token }
+        const data = {
+          username,
+          access_token: res.data.access_token,
+          api_key: res.data.api_key,
+        }
         localStorage.setItem('user', JSON.stringify(data))
       }
       return res.data

@@ -1,0 +1,13 @@
+[Unit]
+Description=Reflex Backend Service (Flask)
+After=multi-user.target
+
+[Service]
+WorkingDirectory=/home/ec2-user/ReflexDashboard/api
+User=ec2-user
+Type=idle
+ExecStart=/home/ec2-user/ReflexDashboard/api/venv/bin/python /home/ec2-user/ReflexDashboard/api/api.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
