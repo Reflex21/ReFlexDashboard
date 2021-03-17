@@ -10,14 +10,18 @@ const SignUp = () => {
   const signupButton = useRef()
 
   const signup = async () => {
-    signupButton.current.setAttribute('disabled', 'disabled')
-    const res = await AuthService.signup(username, password)
-    if (res.access_token) {
-      signupButton.current.removeAttribute('disabled')
-      history.push('/')
+    if (username.trim() !== '' && password.trim() !== '') {
+      signupButton.current.setAttribute('disabled', 'disabled')
+      const res = await AuthService.signup(username, password)
+      if (res.access_token) {
+        signupButton.current.removeAttribute('disabled')
+        history.push('/')
+      } else {
+        signupButton.current.removeAttribute('disabled')
+        alert(res.message)
+      }
     } else {
-      signupButton.current.removeAttribute('disabled')
-      alert(res.message)
+      alert('Invalid Username/Password.')
     }
   }
 
