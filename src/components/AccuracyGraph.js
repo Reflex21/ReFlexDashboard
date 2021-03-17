@@ -28,6 +28,7 @@ const AccuracyGraph = () => {
   const getLatest = data => {
     data.sort((a, b) => ((a.timestamp > b.timestamp) ? 1 : -1))
     const latest = data.slice(Math.max(data.length - 10, 0))
+    latest.sort((a, b) => ((a.id > b.id) ? 1 : -1))
     return reformatData(latest)
   }
 
@@ -35,17 +36,21 @@ const AccuracyGraph = () => {
     const maxSet = data.reduce((max, p) => (p.set_id > max ? p.set_id : max), data[0].set_id)
     const avg = []
     let i
+    let trial = 0
     for (i = 0; i < maxSet + 1; i++) {
       const currentSet = data.filter(x => x.set_id == i)
-      let avgAccuracy = 0
-      const len = currentSet.length
-      currentSet.forEach((item, index) => {
-        avgAccuracy += item.value
-      })
-      avg.push({
-        trial: i + 1,
-        accuracy: avgAccuracy / len,
-      })
+      if (currentSet.length !== 0) {
+        let avgAccuracy = 0
+        const len = currentSet.length
+        currentSet.forEach((item, index) => {
+          avgAccuracy += item.value
+        })
+        avg.push({
+          trial,
+          accuracy: avgAccuracy / len,
+        })
+        trial += 1
+      }
     }
     return avg
   }

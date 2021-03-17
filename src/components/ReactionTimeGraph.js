@@ -29,6 +29,7 @@ const ReactionTimeGraph = ({ user }) => {
   const getLatest = data => {
     data.sort((a, b) => ((a.timestamp > b.timestamp) ? 1 : -1))
     const latest = data.slice(Math.max(data.length - 10, 0))
+    latest.sort((a, b) => ((a.id > b.id) ? 1 : -1))
     return reformatData(latest)
   }
 
@@ -36,18 +37,23 @@ const ReactionTimeGraph = ({ user }) => {
     const maxSet = data.reduce((max, p) => (p.set_id > max ? p.set_id : max), data[0].set_id)
     const avg = []
     let i
+    let trial = 0
     for (i = 0; i < maxSet + 1; i++) {
       const currentSet = data.filter(x => x.set_id == i)
-      let avgTime = 0
-      const len = currentSet.length
-      currentSet.forEach((item, index) => {
-        avgTime += item.value
-      })
-      avg.push({
-        trial: i + 1,
-        accuracy: avgTime / len,
-      })
+      if (currentSet.length !== 0) {
+        let avgTime = 0
+        const len = currentSet.length
+        currentSet.forEach((item, index) => {
+          avgTime += item.value
+        })
+        avg.push({
+          trial,
+          time: avgTime / len,
+        })
+        trial += 1
+      }
     }
+    console.log(avg)
     return avg
   }
 
