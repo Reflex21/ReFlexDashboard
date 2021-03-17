@@ -9,8 +9,12 @@ const SignUp = () => {
   const history = useHistory()
   const signupButton = useRef()
 
+  const hasWhiteSpace = s => s.indexOf(' ') >= 0
+
+  const isValid = s => s.trim() !== '' && !hasWhiteSpace(s)
+
   const signup = async () => {
-    if (username.trim() !== '' && password.trim() !== '') {
+    if (isValid(username) && isValid(password)) {
       signupButton.current.setAttribute('disabled', 'disabled')
       const res = await AuthService.signup(username, password)
       if (res.access_token) {
