@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
 import ProgressChart from './ProgressChart'
+import StatDisplay from './StatDisplay'
 
 const TrainingView = ({ user }) => {
 
@@ -11,7 +11,6 @@ const TrainingView = ({ user }) => {
         <div className="col-6">
           <div className="card">
             <div className="card-body">
-              <h5 className="card-title">Training Progress</h5>
               <ProgressChart user={user} />
             </div>
           </div>
@@ -20,7 +19,7 @@ const TrainingView = ({ user }) => {
         <div className="col-6">
           <div className="card">
             <div className="card-body">
-              <h5 className="card-title">Game Stats</h5>
+              <StatDisplay />
             </div>
           </div>
         </div>

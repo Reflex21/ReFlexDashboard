@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { Redirect, useHistory } from 'react-router-dom'
 import Header from './Header'
 import SideBar from './SideBar'
+import HomeView from './HomeView'
 import InsightView from './InsightView'
 import TrainingView from './TrainingView'
 import AuthService from '../auth/auth-service'
 
-const HomePage = () => {
+const HomePage = ({ themeToggler }) => {
   const [currentView, setCurrentView] = useState(0)
   const [isLogged, setIsLogged] = useState(AuthService.isLogged())
 
@@ -27,12 +28,16 @@ const HomePage = () => {
           <div className="row">
             <SideBar
               setCurrentView={setCurrentView}
+              themeToggler={themeToggler}
             />
             {
-              (currentView === 0) && (<InsightView />)
+              (currentView === 0) && (<HomeView />)
             }
             {
-              (currentView === 1) && (<TrainingView />)
+              (currentView === 1) && (<InsightView />)
+            }
+            {
+              (currentView === 2) && (<TrainingView />)
             }
           </div>
         </div>

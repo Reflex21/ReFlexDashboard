@@ -102,23 +102,22 @@ const ReactionTimeGraph = ({ user }) => {
         <button
           type="button"
           className="btn btn-secondary"
-          onClick={() => setShowLatest(true)}
+          onClick={() => {
+            setShowLatest(true)
+            refreshData()
+          }}
         >
           Show Latest
         </button>
         <button
           type="button"
           className="btn btn-secondary"
-          onClick={() => setShowLatest(false)}
+          onClick={() => {
+            setShowLatest(false)
+            refreshData()
+          }}
         >
           Show Average
-        </button>
-        <button
-          type="button"
-          className="btn btn-secondary"
-          onClick={() => refreshData()}
-        >
-          Refresh
         </button>
       </div>
     </div>

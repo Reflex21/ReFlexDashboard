@@ -6,29 +6,41 @@ import {
   Link,
   useHistory,
 } from 'react-router-dom'
-import axiosInstance from './client'
+import { ThemeProvider } from 'styled-components'
 import { login } from './auth'
+
+import GlobalStyle from './components/GlobalStyle'
+import { lightTheme, darkTheme } from './components/Themes'
 
 import HomePage from './components/HomePage'
 import Login from './components/Login'
 import SignUp from './components/SignUp'
 
 const App = () => {
+  const [theme, setTheme] = useState('light')
+  const themeToggler = () => {
+    theme === 'light' ? setTheme('dark') : setTheme('light')
+  }
 
   return (
-    <Router>
-      <Switch>
-        <Route path="/signup">
-          <SignUp />
-        </Route>
-        <Route path="/login">
-          <Login />
-        </Route>
-        <Route path="/">
-          <HomePage />
-        </Route>
-      </Switch>
-    </Router>
+    <ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme}>
+      <>
+        <GlobalStyle />
+        <Router>
+          <Switch>
+            <Route path="/signup">
+              <SignUp />
+            </Route>
+            <Route path="/login">
+              <Login />
+            </Route>
+            <Route path="/">
+              <HomePage themeToggler={themeToggler} />
+            </Route>
+          </Switch>
+        </Router>
+      </>
+    </ThemeProvider>
   )
 }
 

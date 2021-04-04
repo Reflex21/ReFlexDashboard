@@ -3,7 +3,6 @@ import s from 'styled-components'
 import blankUserIcon from 'url:../../blankUser.png' // Temp photo
 import Upload from './Upload'
 import Settings from './Settings'
-import axiosInstance from '../client'
 import AuthService from '../auth/auth-service'
 import UserService from '../auth/user-service'
 
@@ -17,7 +16,7 @@ const LeftSideBar = s.ul`
   height: calc(100vh - 70px);
 `
 
-const SideBar = ({ setCurrentView }) => {
+const SideBar = ({ themeToggler, setCurrentView }) => {
   const { username, api_key } = AuthService.getCurrentUser()
 
   const importData = async data => {
@@ -28,7 +27,7 @@ const SideBar = ({ setCurrentView }) => {
     <>
       <Upload importData={importData} />
       <Settings api_key={api_key} />
-      <Wrapper className="col-2 bg-light p-0">
+      <Wrapper className="col-1 bg-light p-0">
         <LeftSideBar className="nav nav-pills flex-column">
           <div className="nav-item border-bottom text-center pt-3">
             <img
@@ -49,7 +48,7 @@ const SideBar = ({ setCurrentView }) => {
                 setCurrentView(0)
               }}
             >
-              Insights
+              Home
             </a>
           </li>
           <li className="nav-item border-bottom">
@@ -59,6 +58,18 @@ const SideBar = ({ setCurrentView }) => {
               onClick={e => {
                 e.preventDefault()
                 setCurrentView(1)
+              }}
+            >
+              Insights
+            </a>
+          </li>
+          <li className="nav-item border-bottom">
+            <a
+              className="nav-link text-center"
+              href="#/"
+              onClick={e => {
+                e.preventDefault()
+                setCurrentView(2)
               }}
             >
               Training
