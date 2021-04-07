@@ -12,7 +12,7 @@ const InsightView = () => {
             type="reaction"
             game="all"
             windowSize={20}
-            title="Moving Avgerage - Reaction Time"
+            title="Moving Average - Reaction Time"
             xLabel="Trial"
             yLabel="Reaction Time (ms)"
           />
