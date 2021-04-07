@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import GenericGraph from './GenericGraph'
+import DetailedGraph from './DetailedGraph'
 
 const HomeView = () => {
 
@@ -7,14 +8,22 @@ const HomeView = () => {
     <div className="col-10">
       <div className="row p-5">
         <div className="col-6">
-          <GenericGraph
+          <DetailedGraph
             type="reaction"
-            title="Reaction Time"
+            title="Reaction Times"
             xLabel="Trial"
             yLabel="Reaction Time (ms)"
           />
         </div>
 
+        <div className="col-6">
+          <DetailedGraph
+            type="accuracy"
+            title="Accuracy"
+            xLabel="Trial"
+            yLabel="Accuracy (%)"
+          />
+        </div>
       </div>
     </div>
   )

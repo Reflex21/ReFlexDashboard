@@ -17,16 +17,6 @@ const InsightView = () => {
             yLabel="Reaction Time (ms)"
           />
         </div>
-
-        <div className="col-6">
-          <GenericGraph
-            type="reaction"
-            game="all"
-            title="Reaction Time"
-            xLabel="Trial"
-            yLabel="Reaction Time (ms)"
-          />
-        </div>
       </div>
     </div>
   )
