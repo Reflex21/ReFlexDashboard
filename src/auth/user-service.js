@@ -13,13 +13,8 @@ class UserService {
     return axios.get(API_URL + 'data/reaction', { headers: authHeader() })
   } */
 
-  getUserAllData(type) {
-    return axios.get(`${API_URL}data/${type}`, { headers: authHeader() })
-  }
-
-  // TODO: Implement getting data from a specific game only
-  getUserSpecificData(type) {
-    return axios.get(`${API_URL}data/${type}`, { headers: authHeader() })
+  getUserData(type, game, mavg) {
+    return axios.get(`${API_URL}data/${type}?game=${game}&mavg=${mavg}`, { headers: authHeader() })
   }
 
   importUserData(data) {

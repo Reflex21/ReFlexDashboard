@@ -1,3 +1,4 @@
+import math
 import time
 import flask
 import flask_sqlalchemy
@@ -5,6 +6,7 @@ import flask_praetorian
 import flask_cors
 import random
 import string
+import pandas as pd
 import constants
 from sqlalchemy import func
 
@@ -325,9 +327,36 @@ def validate_api_key():
 @app.route("/api/data/<type>", methods=['GET'])
 @flask_praetorian.auth_required
 def get_data(type):
+    game = flask.request.args.get('game')
+    m_avg = flask.request.args.get('mavg')
+    print(game)
     try:
+        results = []
         user = User.query.filter_by(username=flask_praetorian.current_user().username).first()
-        results = [r.to_dict() for r in DataPoint.query.filter_by(user_id=user.id, type=type).all()]
+
+        # Grab the correct data
+        if game == "all":
+            raw = [r.to_dict() for r in DataPoint.query.filter_by(user_id=user.id, type=type).all()]
+        else:
+            raw = [r.to_dict() for r in DataPoint.query.filter_by(user_id=user.id, type=type, game=game).all()]
+
+        # Try to get window size for moving average
+        if m_avg is not None:
+            window_size = int(m_avg)
+        else:
+            window_size = -1
+
+        #  Check to see if we want normal data or a moving average
+        if window_size > 0:
+            print(window_size)
+            df = pd.DataFrame(list(raw))
+            moving_avg = df['value'].rolling(window=window_size).mean()
+            for i, val in moving_avg.iteritems():
+                v = float(val)
+                if not math.isnan(v):
+                    results.append({"trial": i, "value": val})
+        else:
+            results = raw
         return flask.jsonify(results)
 
     except Exception as e:

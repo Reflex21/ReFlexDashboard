@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import ProgressChart from './ProgressChart'
-import StatDisplay from './StatDisplay'
+import GameStatsGraph from './GameStatsGraph'
 
 const TrainingView = ({ user }) => {
 
@@ -19,7 +19,7 @@ const TrainingView = ({ user }) => {
         <div className="col-6">
           <div className="card">
             <div className="card-body">
-              <StatDisplay />
+              <GameStatsGraph />
             </div>
           </div>
         </div>

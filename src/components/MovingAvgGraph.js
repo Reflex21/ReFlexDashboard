@@ -1,19 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { ScatterChart, Scatter, Tooltip, YAxis, XAxis, ZAxis, Label } from 'recharts'
+import { LineChart, Line, Tooltip, YAxis, XAxis, Label } from 'recharts'
 import UserService from '../auth/user-service'
 
-const GenericGraph = ({ user, type, game, title, xLabel, yLabel}) => {
-  const [showLatest, setShowLatest] = useState(true)
+const MovingAvgGraph = ({ user, type, game, title, xLabel, yLabel }) => {
   const [graphData, setGraphData] = useState([])
+  const [windowSize, setWindowSize] = useState(0)
   const [currentGame, setCurrentGame] = useState(game)
-  const stateRef = useRef()
-  const gameRef = useRef()
 
-  stateRef.current = showLatest
-  gameRef.current = currentGame
-
-  const getData = async () => {
-    const res = UserService.getUserData(type, gameRef.current, 0)
+  const getData = async winSize => {
+    const res = UserService.getUserData(type, currentGame, winSize)
     return res
   }
 
@@ -30,47 +25,13 @@ const GenericGraph = ({ user, type, game, title, xLabel, yLabel}) => {
     return formattedData
   }
 
-  const getLatest = data => {
-    data.sort((a, b) => ((a.timestamp > b.timestamp) ? 1 : -1))
-    const latest = data.slice(Math.max(data.length - 50, 0))
-    latest.sort((a, b) => ((a.id > b.id) ? 1 : -1))
-    return reformatData(latest)
-  }
-
-  const getAvg = data => {
-    const maxSet = data.reduce((max, p) => (p.set_id > max ? p.set_id : max), data[0].set_id)
-    const avg = []
-    let i
-    let trial = 0
-    for (i = 0; i < maxSet + 1; i++) {
-      const currentSet = data.filter(x => x.set_id == i)
-      if (currentSet.length !== 0) {
-        let avgTime = 0
-        const len = currentSet.length
-        currentSet.forEach((item, index) => {
-          avgTime += item.value
-        })
-        avg.push({
-          trial,
-          value: avgTime / len,
-        })
-        trial += 1
-      }
-    }
-    return avg
-  }
-
-  const refreshData = () => {
-    getData().then(res => {
+  const refreshData = winSize => {
+    getData(winSize).then(res => {
+      console.log(res.data)
       // Check if there's any data
       if (res.data.length > 0) {
-        if (stateRef.current) {
-          const latest = getLatest(res.data)
-          setGraphData(latest)
-        } else {
-          const avg = getAvg(res.data)
-          setGraphData(avg)
-        }
+        const data = reformatData(res.data)
+        setGraphData(data)
       } else {
         setGraphData([])
       }
@@ -81,56 +42,64 @@ const GenericGraph = ({ user, type, game, title, xLabel, yLabel}) => {
     <div className="card">
       <div className="card-body">
         <h5 className="card-title">{ title }</h5>
-        <ScatterChart
+        <h6 className="card-title">Window Size: {windowSize}</h6>
+        <LineChart
           width={600}
           height={300}
+          data={graphData}
           margin={{
             top: 10, right: 10, bottom: 20, left: 10,
           }}
         >
-          <Tooltip
-            formatter={(value, name) => {
-              if (name === 'value') {
-                if (type === 'reaction') {
-                  return `${value}ms`
-                }
-                if (type === 'accuracy') {
-                  return `${value * 100}%`
-                }
-              }
-              return value
-            }}
-            cursor={{ strokeDasharray: '3 3' }}
-          />
           <XAxis type="number" dataKey="trial" name={xLabel} allowDecimals={false} domain={['dataMin', 'dataMax']}>
             <Label value={xLabel} position="bottom" />
           </XAxis>
           <YAxis type="number" dataKey="value" name={yLabel} domain={[0, dataMax => Math.ceil(dataMax / 1000) * 1000]}>
             <Label value={yLabel} angle={-90} position="left" />
           </YAxis>
-          <Scatter name={title} data={graphData} fill="#66a8ff" line shape="circle" />
-        </ScatterChart>
+          <Line name={title} dataKey="value" stroke="#66a8ff" strokeWidth={1} dot={false} />
+        </LineChart>
       </div>
       <div className="btn-group text-center">
         <button
           type="button"
           className="btn btn-secondary"
           onClick={() => {
-            setShowLatest(true)
-            refreshData()
+            refreshData(5)
+            setWindowSize(5)
           }}
         >
-          Show Latest
+          5
         </button>
         <button
           type="button"
           className="btn btn-secondary"
           onClick={() => {
-            setShowLatest(false)
-            refreshData()
+            refreshData(10)
+            setWindowSize(10)
           }}
         >
-          Show Average
+          10
+        </button>
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={() => {
+            refreshData(50)
+            setWindowSize(50)
+          }}
+        >
+          50
+        </button>
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={() => {
+            refreshData(100)
+            setWindowSize(100)
+          }}
+        >
+          100
         </button>
         <div className="btn-group">
           <button className="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown">
@@ -192,4 +161,4 @@ const GenericGraph = ({ user, type, game, title, xLabel, yLabel}) => {
   )
 }
 
-export default GenericGraph
+export default MovingAvgGraph

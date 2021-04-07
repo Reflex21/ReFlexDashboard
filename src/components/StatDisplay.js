@@ -11,27 +11,7 @@ const StatDisplay = () => {
       </div>
 
       <div className="row">
-        <div className="col">
-          <div className="btn-group text-center">
-            <button
-              type="button"
-              className="btn btn-secondary"
-            >
-              MOBA
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary"
-            >
-              FPS
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary"
-            >
-              3D Sports
-            </button>
-          </div>
+        
         </div>
       </div>
     </>

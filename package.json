@@ -36,6 +36,7 @@
     "react-is": "^17.0.1",
     "react-router-dom": "^5.2.0",
     "react-token-auth": "^1.1.8",
+    "react-unity-webgl": "^7.1.10",
     "recharts": "^2.0.8",
     "styled-components": "^5.2.1",
     "xlsx": "^0.16.9"
